@@ -6,7 +6,7 @@ const socket=require('socket.io')
 
 const webSocketServer=socket(server,{
     cors:{
-        origin:"http://localhost:5173",
+        origin:"https://multiplayer-tic-tac-toe-client.onrender.com",
         credentials:true
     }
     
