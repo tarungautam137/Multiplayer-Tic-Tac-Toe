@@ -3,6 +3,7 @@ import { useState ,useEffect} from 'react'
 import swal from 'sweetalert2'
 import {io} from 'socket.io-client'
 import Confetti from './confetti'
+import BASE_URL from './constant'
 
 const App = () => {
 
@@ -16,6 +17,23 @@ const App = () => {
     const [winner,setWinner]=useState(null);
 
     useEffect(()=>{calculateWinner()},[board]);
+
+    useEffect(() => {
+            if (!socket) return;
+
+            const handleOpponentLeft = () => {
+                if (winner === null) {
+                    setOpponentName("bhagoda");
+                    setWinner(playingAs);
+                }
+            };
+
+            socket.on("opponentLeftTheMatch", handleOpponentLeft);
+
+            return () => {
+                socket.off("opponentLeftTheMatch", handleOpponentLeft);
+            };
+    }, [socket, winner, playingAs]);
 
     const calculateWinner=()=>{
 
@@ -66,7 +84,10 @@ const App = () => {
 
         if(res.isConfirmed) setName(res.value);
 
-        const newsocket=io("http://localhost:3000");
+        let newsocket=null;
+
+        if(location.hostname===BASE_URL) newsocket=io(BASE_URL);
+        else newsocket=io(BASE_URL,{path:"/socket.io"});
 
         setName(res.value);
 
@@ -93,15 +114,6 @@ const App = () => {
         else setnext('X');
         
         setboard(newboard);
-    })
-
-    socket?.on("opponentLeftTheMatch",()=>{
-
-        if(winner===null){
-
-            setOpponentName("bhagoda");
-            setWinner(playingAs);
-        }
     })
 
     if(!isPlaying){

@@ -1,5 +1,6 @@
 const http=require('http')
 const server=http.createServer();
+require('dotenv').config()
 
 const socket=require('socket.io')
 
@@ -85,6 +86,5 @@ webSocketServer.on("connection",(socket)=>{
 
 })
 
-server.listen(3000);
-
-console.log("server is listening at port 3000")
+const PORT=process.env.PORT||3000
+server.listen(PORT, () => { console.log("server is listening at port", PORT)});
